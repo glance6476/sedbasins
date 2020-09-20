@@ -108,21 +108,35 @@ sub = 19 / 100 * 1000000
 
 # constants
 yl = 125000 #m #initial lithospheric thickness
-yc = c(35000, 31000, 26000, 22000, 16000) #m #initial crustal thickness
 pm = 3330 #kgm-3 #mantle density
 pc = 2800 #kgm-3 #crustal density
 ps = 2400 #kgm-3 #sediment density
 Ta = 1333 #degreeC #asthenospheric temperature
 a = 0.0000328 #degreeC-1 #volumetric coefficient of thermal expansion
 
-# stretch factors
-B = c(1.1, 1.2, 1.3, 1.4, 1.5, 2, 3, 4)
+# stretch factors and crustal thickness
+#yc = c(16000, 22000, 26000, 31000, 35000) #a range of constants
+B = c(1.1, 1.2, 1.3, 1.4, 1.5, 2, 3, 4) #x variable
 
 ## determining the magnitude of subsidence (ys) for a range of stretch factors (B)
-
+## the stupid way
 # equation for amount of subsidence (s)
-ys = yl * (1 - 1/B) * (((pm - pc) * (yc / yl) * (1 - 1/2 * a * Ta * (yc / yl)) - (1/2 * pm * a * Ta)) / (pm * (1 - 1/2 * a * Ta) - ps))
+ys1 = yl * (1 - 1/B) * (((pm - pc) * (16000 / yl) * (1 - 1/2 * a * Ta * (16000 / yl)) - (1/2 * pm * a * Ta)) / (pm * (1 - 1/2 * a * Ta) - ps))
+ys2 = yl * (1 - 1/B) * (((pm - pc) * (22000 / yl) * (1 - 1/2 * a * Ta * (22000 / yl)) - (1/2 * pm * a * Ta)) / (pm * (1 - 1/2 * a * Ta) - ps))
+ys3 = yl * (1 - 1/B) * (((pm - pc) * (26000 / yl) * (1 - 1/2 * a * Ta * (26000 / yl)) - (1/2 * pm * a * Ta)) / (pm * (1 - 1/2 * a * Ta) - ps))
+ys4 = yl * (1 - 1/B) * (((pm - pc) * (31000 / yl) * (1 - 1/2 * a * Ta * (31000 / yl)) - (1/2 * pm * a * Ta)) / (pm * (1 - 1/2 * a * Ta) - ps))
+ys5 = yl * (1 - 1/B) * (((pm - pc) * (35000 / yl) * (1 - 1/2 * a * Ta * (35000 / yl)) - (1/2 * pm * a * Ta)) / (pm * (1 - 1/2 * a * Ta) - ps))
 
 ## plotting the magnitude of subsidence
-plot(ys~B, ylim = rev(c(0, 9000)), las = 1, ylab = "Magnitude of Subsidence (m)", xlab = "Stretch Factor",
-     col = "blue", lwd = 2, main = "Syn-rift Subsidence as a Function of Stretch Factor")
+plot(ys1~B, ylim = rev(c(-2000, 8500)), las = 1, ylab = "Magnitude of Subsidence (m)", xlab = "Stretch Factor",
+     col = "purple", lwd = 2, pch = 6, main = "Syn-rift Subsidence as a Function of Stretch Factor")
+lines(ys2~B, type = "p", col = "red", lwd = 2, pch = 0)
+lines(ys3~B, type = "p", col = "green", lwd = 2, pch = 2)
+lines(ys4~B, type = "p", col = "yellow", lwd = 2, pch = 5)
+lines(ys5~B, type = "p", col = "blue", lwd = 2, pch = 1)
+
+# legend
+legend("topright", legend=c("crustal thickness = 16000 m", "crustal thickness = 22000 m", "crustal thickness = 26000 m", "crustal thickness = 31000 m", "crustal thickness = 35000 m"),
+       bty="n",  pch = c(6, 0, 2, 5, 1), 
+       cex=c(0.5, 0.5), col=c("purple", "red", "green", "yellow", "blue"))
+
