@@ -140,3 +140,36 @@ legend("topright", legend=c("crustal thickness = 16000 m", "crustal thickness = 
        bty="n",  pch = c(6, 0, 2, 5, 1), 
        cex=c(0.5, 0.5), col=c("purple", "red", "green", "yellow", "blue"))
 
+
+### the smart way (mapply)
+# assigning values
+# constants
+yl = 125000 #m #initial lithospheric thickness
+pm = 3330 #kgm-3 #mantle density
+pc = 2800 #kgm-3 #crustal density
+ps = 2400 #kgm-3 #sediment density
+Ta = 1333 #degreeC #asthenospheric temperature
+a = 0.0000328 #degreeC-1 #volumetric coefficient of thermal expansion
+yc = c(16000, 22000, 26000, 31000, 35000)
+B = c(1.1, 1.2, 1.3, 1.4, 1.5, 2, 3, 4) #x variable
+
+# defining function
+ys_func = function(B, yc){yl * (1 - 1/B) * (((pm - pc) * (yc / yl) * (1 - 1/2 * a * Ta * (yc / yl)) - (1/2 * pm * a * Ta)) / (pm * (1 - 1/2 * a * Ta) - ps))}
+
+# mapply
+ys_matrix = mapply(ys_func, B, MoreArgs = list(yc))
+rownames(ys_matrix) = yc
+colnames(ys_matrix) = B
+
+# making plots
+plot(ys_matrix['35000',]~B, ylim = rev(c(-2000, 8500)), las = 1, ylab = "Magnitude of Subsidence (m)", xlab = "Stretch Factor",
+     col = "purple", lwd = 2, pch = 6, main = "Syn-rift Subsidence as a Function of Stretch Factor")
+lines(ys_matrix['31000',]~B, type = "p", col = "red", lwd = 2, pch = 0)
+lines(ys_matrix['26000',]~B, type = "p", col = "green", lwd = 2, pch = 2)
+lines(ys_matrix['22000',]~B, type = "p", col = "yellow", lwd = 2, pch = 5)
+lines(ys_matrix['16000',]~B, type = "p", col = "blue", lwd = 2, pch = 1)
+
+# legend
+legend("topright", legend=c("35000 m", "31000 m", "26000 m", "22000 m", "16000 m"), title = "crustal thickness",
+       bty="n",  pch = c(6, 0, 2, 5, 1), 
+       cex=c(0.5, 0.5), col=c("purple", "red", "green", "yellow", "blue"))
