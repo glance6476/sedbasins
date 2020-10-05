@@ -1,0 +1,6 @@
+﻿unit,depth_top_km,depth_base_km,mean_age_Ma
+4,0,2.1,30
+3,2.1,5.2,80
+2,5.2,9.4,120
+1,9.4,11.8,160
+basement,11.8,,
