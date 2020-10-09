@@ -8,7 +8,7 @@ ROM$mean_depth_km <- (ROM$depth_base_km + ROM$depth_top_km) / 2
 pm <- 3330 # mantle density kgm-3
 psg <- 2650 # sediment grain density kgm-3
 pw <- 1030 # seawater density kgm-3
-phi_s <- 0.55 # porosity at surface
+phi_s <- 0.65 # porosity at surface
 c <- 0.35 # compaction constant
 Wd <- 0 # water depth at deposition km
 dSL <- 0 # change in sea level km
@@ -36,7 +36,7 @@ U1_Y <- Wd + ROM$decomp_thickness_km[ROM$unit==1] * ((pm - ROM$bkstr_bulk_dens_k
 pm <- 3330 # mantle density kgm-3
 psg <- 2650 # sediment grain density kgm-3
 pw <- 1030 # seawater density kgm-3
-phi_s <- 0.55 # porosity at surface
+phi_s <- 0.65 # porosity at surface
 c <- 0.35 # compaction constant
 Wd <- 0 # water depth at deposition km
 dSL <- 0 # change in sea level km
@@ -116,13 +116,50 @@ bulk_dens_kmg3_4_u2 <- (phi_d_4_u2 * pw) + ((1 - phi_d_4_u2) * psg)
 bulk_dens_kmg3_4_u3 <- (phi_d_4_u3 * pw) + ((1 - phi_d_4_u3) * psg)
 bkstr_bulk_dens_kgm3_4_u4 <- (bkstr_phi_4_u4 * pw) + ((1 - bkstr_phi_4_u4) * psg)
 
-# Step 3-8: solve for tectonic subsidence using bulk density of Unit 1 2 and 3
+# Step 4-8: solve for tectonic subsidence using bulk density of Unit 1 2 and 3
 U4_Y <- Wd + ROM$thickness_km[ROM$unit==1] * ((pm - bulk_dens_kmg3_4_u1) / (pm - pw)) + ROM$thickness_km[ROM$unit==2] * ((pm - bulk_dens_kmg3_4_u2) / (pm - pw)) + ROM$thickness_km[ROM$unit==3] * ((pm - bulk_dens_kmg3_4_u3) / (pm - pw)) + decomp_thickness_km_4_u4 * ((pm - bkstr_bulk_dens_kgm3_4_u4) / (pm - pw))- dSL * pm *(pm - pw)
 
+# add columns
+ROM$tectonic_sub_km <- c(U4_Y, U3_Y, U2_Y, U1_Y, NA)
+
 #### Part 3
+# Total subsidence
+U1_T = ROM$decomp_thickness_km[ROM$unit==1]
+U2_T = ROM$thickness_km[ROM$unit==1] + ROM$decomp_thickness_km[ROM$unit==2]
+U3_T = ROM$thickness_km[ROM$unit==1] + ROM$thickness_km[ROM$unit==2] + ROM$decomp_thickness_km[ROM$unit==3]
+U4_T = ROM$thickness_km[ROM$unit==1] + ROM$thickness_km[ROM$unit==2] + ROM$thickness_km[ROM$unit==3] + ROM$decomp_thickness_km[ROM$unit==4]
+T <- c(U4_T, U3_T, U2_T, U1_T)
+
+ROM$total_sub_km <- c(U4_T, U3_T, U2_T, U1_T, NA)
+
 # Q1 plot subsidence against time
+Y <- c(U4_Y, U3_Y, U2_Y, U1_Y)
+plot(Y~ROM$mean_age_Ma[1:4], type = "o", ylim = rev(c(0, 14)), ylab = "Depth (km)", xlim = rev(c(0, 190)), xlab = "Age (Ma)", main = "Tectonic vs Sediment Loading Subsidence")
+lines(T~ROM$mean_age_Ma[1:4], type = "o", col = "red")
+legend("topright", legend = c("Tectonic Subsidence", "Total Subsidence"), bty = "n", lty = c(1, 1), col = c("black", "red"))
+
+# Q2 export csv
+write.csv(ROM, file = "lab5_ROM.csv")
+
+# Q4
+d75_q4 = 0.75 * U4_T
+# polynomial function calculated in Excel for five data points: y = -1.2367x2 + 7.3961x + 166.5
+# with y being the time and x being the depth
+# substitute depth = d75_q4
+# time = 126 Ma
+
+# Q5
+# 160 Ma
+# p160_q5 = ROM$tectonic_sub_km[ROM$unit==1] / ROM$total_sub_km[ROM$unit==1] * 100
+# p120_q5 = ROM$tectonic_sub_km[ROM$unit==2] / ROM$total_sub_km[ROM$unit==2] * 100
+# p80_q5 = ROM$tectonic_sub_km[ROM$unit==3] / ROM$total_sub_km[ROM$unit==3] * 100
+# p30_q5 = ROM$tectonic_sub_km[ROM$unit==4] / ROM$total_sub_km[ROM$unit==4] * 100
+
+p160_q5 = (ROM$total_sub_km[ROM$unit==1] - ROM$tectonic_sub_km[ROM$unit==1]) / ROM$total_sub_km[ROM$unit==1] * 100
+p120_q5 = (ROM$total_sub_km[ROM$unit==2] - ROM$tectonic_sub_km[ROM$unit==2]) / ROM$total_sub_km[ROM$unit==2] * 100
+p80_q5 = (ROM$total_sub_km[ROM$unit==3] - ROM$tectonic_sub_km[ROM$unit==3]) / ROM$total_sub_km[ROM$unit==3] * 100
+p30_q5 = (ROM$total_sub_km[ROM$unit==4] - ROM$tectonic_sub_km[ROM$unit==4]) / ROM$total_sub_km[ROM$unit==4] * 100
+
+ROM$sediment_total_sub = c(p30_q5, p80_q5, p120_q5, p160_q5, NA)
 
 
-
-
- 
