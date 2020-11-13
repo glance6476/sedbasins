@@ -1,0 +1,8 @@
+﻿unit_name,top_m,base_m,age_from,age_to,final_thickness,depth_baseU1_startdep,depth_baseU2_startdep,depth_baseU3_startdep,depth_baseU4_startdep,depth_baseU5_startdep,depth_baseU6_startdep
+,,,0,,,5000,2600,2300,1450,650,150
+U6,0,150,35,0,150,4850,2450,2150,1300,500,0
+U5,150,650,120,35,500,4350,1950,1650,800,0,
+U4,650,1450,150,120,800,3550,1150,850,0,,
+U3,1450,2300,240,150,850,2700,300,0,,,
+U2,2300,2600,320,240,300,2400,0,,,,
+U1,2600,5000,450,320,2400,0,,,,,
